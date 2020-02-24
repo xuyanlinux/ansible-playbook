@@ -1,8 +1,9 @@
 ## 一、 下载二进制安装包
 官网下载即可，这里安装的是5.7.22，地址是：
 https://downloads.mysql.com/archives/get/p/23/file/mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz
-下载后，把安装包放进这个目录
+下载后，新建下面的目录
 ./mysql/roles/mysql/files/
+然后把安装包放在这个目录里面
 
 ## 二、一键安装
 在mysql目录下直接执行
