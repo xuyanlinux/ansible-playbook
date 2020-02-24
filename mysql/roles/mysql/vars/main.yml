@@ -1,0 +1,14 @@
+---
+# vars file for mysql
+PORT: 3006
+USERNAME: mysql
+GROUPNAME: mysql
+BASEDIR: /usr/local/mysql/
+DATADIR: /data/mysql/
+RESOURCEDIR: /opt/mysql/
+# 软连接路径
+LINKPATH: /usr/local/mysql
+# 安装包解压后的目录名，后面加上".tar.gz"就是安装包的名字
+PACKAGENAME: mysql-5.7.22-linux-glibc2.12-x86_64
+
+

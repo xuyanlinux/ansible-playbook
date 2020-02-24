@@ -1,0 +1,76 @@
+---
+# tasks file for mysql
+- name: 创建用户组
+  group:
+    name: "{{ GROUPNAME }}"
+    state: present
+
+- name: 创建用户
+  user:
+    name: "{{ USERNAME }}"
+    group: "{{ GROUPNAME }}"
+    shell: /sbin/nologin
+    create_home: no
+
+- name: 创建安装包存放目录
+  file:
+    path: "{{ RESOURCEDIR }}"
+    state: directory
+    recurse: yes
+    owner: "{{ USERNAME }}"
+    group: "{{ GROUPNAME }}"
+
+- name: 复制安装包到目标服务器
+  copy:
+    src: "{{ PACKAGENAME }}.tar.gz"
+    dest: "{{ RESOURCEDIR }}"
+
+- name: 解压安装包
+  unarchive:
+    src: "{{ RESOURCEDIR }}{{ PACKAGENAME }}.tar.gz"
+    dest: "{{ RESOURCEDIR }}"
+    owner: "{{ USERNAME }}"
+    group: "{{ GROUPNAME }}"
+    copy: no
+
+- name: 在/usr/local中创建软连接，指向上面的运行目录
+  file:
+    src: "{{ RESOURCEDIR }}{{ PACKAGENAME }}"
+    dest: "{{ LINKPATH }}"
+    owner: "{{ USERNAME }}"
+    group: "{{ GROUPNAME }}"
+    state: link
+
+- name: 创建数据目录
+  file:
+    path: "{{ DATADIR }}mysql{{ PORT }}/{{ item }}"
+    state: directory
+    recurse: yes
+    owner: "{{ USERNAME }}"
+    group: "{{ GROUPNAME }}"
+  loop:
+    - tmp
+    - data
+    - logs
+
+- name: 复制配置文件到目标服务器
+  template:
+    src: my.cnf.j2
+    dest: "{{ DATADIR }}mysql{{PORT}}/my.cnf"
+    owner: "{{ USERNAME }}"
+    group: "{{ GROUPNAME }}"
+
+
+- name: 初始化数据库
+  shell:
+    cmd: "{{ BASEDIR }}bin/mysqld --defaults-file={{ DATADIR }}mysql{{ PORT }}/my.cnf --initialize-insecure"
+
+
+- name: 添加环境变量
+  shell:
+    cmd: echo "export PATH={{ BASEDIR }}bin:$PATH">>/etc/profile
+
+- name: 使环境变量生效
+  shell:
+    cmd: source /etc/profile
+
